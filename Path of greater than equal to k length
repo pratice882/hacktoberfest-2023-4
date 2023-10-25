@@ -1,0 +1,62 @@
+Given a graph, a source vertex in the graph, and a number k, find if there is a simple path, of path length greater than or equal to k,(without any cycle) starting from a given source and ending at any other vertex.
+Source vertex should always be  0.
+
+Example 1:
+
+Input:
+V = 4 , E = 3 and K = 8
+A[] = [0, 1, 5, 1, 2, 1, 2, 3, 1]
+Output: 0
+Explanation:
+There exists no path which has a distance 
+of 8. 
+
+
+
+from collections import defaultdict
+
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = defaultdict(list)
+
+    def addEdge(self, u, v, w):
+        self.graph[u].append((v, w))
+
+    def isReachable(self, u, k):
+        if k <= 0:
+            return True
+
+        if k == 1 and (u, 0) in self.graph[u]:
+            return True
+
+        visited = [False] * self.V
+        visited[u] = True
+
+        return self.isReachableDFS(u, k, visited)
+
+    def isReachableDFS(self, u, k, visited):
+        if k <= 0:
+            return True
+
+        for neighbor, weight in self.graph[u]:
+            if not visited[neighbor]:
+                if self.isReachableDFS(neighbor, k - weight, visited):
+                    return True
+
+        return False
+
+def hasSimplePath(graph, k):
+    return graph.isReachable(0, k)
+
+# Example
+V, E, K = 4, 3, 8
+edges = [0, 1, 5, 1, 2, 1, 2, 3, 1]
+
+g = Graph(V)
+for i in range(0, 3 * E, 3):
+    u, v, w = edges[i], edges[i + 1], edges[i + 2]
+    g.addEdge(u, v, w)
+
+result = hasSimplePath(g, K)
+print(result)
